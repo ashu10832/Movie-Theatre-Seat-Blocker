@@ -12,16 +12,19 @@ import psutil
 import logging
 from datetime import datetime, date
 
+
+# TODO: Use proxies and add random delays to avoid blocking!
+
 ## Specify the details of the movie and theatre and showtime here!
 
 THEATRE = 'm2k rohini'
-ROW = 'A'
-SEAT_NUMBER = '21'
+ROW = 'B'
+SEAT_NUMBER = '17'
 MOVIE = 'Tanhaji: The Unsung Warrior (UA)'
-SHOWTIME = '2:30'
-# TODO: Update the time
+SHOWTIME = '5:25'
 REPEAT_TIME = 15*60
 DATE = '21'
+TYPE = '2D'
 
 
 # Restarts the this script after closing the process
@@ -114,7 +117,7 @@ else:
 
 # TODO: Handle the options of 2D and 3D movies with same name
 
-showTime = browser.find_element_by_xpath("//*[@id='showEvents']//a[contains(text(),'%s')]//ancestor::li[@class='list']/div[2]//div[contains(text(),'%s')]/ancestor::a"%(MOVIE,SHOWTIME))
+showTime = browser.find_element_by_xpath("//*[@id='showEvents']//a[contains(text(),'%s')]//ancestor::div[@class='listing-info']/div[@class='eventInfo'][contains(text(),'%s')]//ancestor::li[@class='list']/div[2]//div[contains(text(),'%s')]/ancestor::a"%(MOVIE,TYPE,SHOWTIME))
 if 'data-disabled' in showTime.get_attribute("class"):
     print("Sorry! This showtime is either sold out or not available at the moment!")
     print("Quitting the program...")
@@ -178,5 +181,4 @@ restart_program()
 
 
 # IP 122.161.222.151
-# //div[@class="date-numeric"]
-#//*[@id="showDates"]
+# //div[@class="eventInfo"][contains(text(),'3D')]
