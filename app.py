@@ -10,17 +10,18 @@ import os
 import sys
 import psutil
 import logging
-from datetime import datetime
+from datetime import datetime, date
+
+## Specify the details of the movie and theatre and showtime here!
 
 THEATRE = 'm2k rohini'
 ROW = 'A'
-SEAT_NUMBER = '17'
+SEAT_NUMBER = '21'
 MOVIE = 'Tanhaji: The Unsung Warrior (UA)'
-SHOWTIME = '7:55'
+SHOWTIME = '2:30'
 # TODO: Update the time
 REPEAT_TIME = 15*60
-
-# TODO: Run this script on a server - pythonanywhere
+DATE = '21'
 
 
 # Restarts the this script after closing the process
@@ -64,7 +65,7 @@ option = webdriver.ChromeOptions()
 # Does not open a chrome window when using this
 #option.add_argument("--headless")
 # Disables use of GPU to save memory
-option.add_argument("--disable-gpu")
+#option.add_argument("--disable-gpu")
 # Uses the incognito mode for Chrome
 option.add_argument("--incognito")
 
@@ -73,7 +74,7 @@ browser = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=optio
 # Open the below URL
 browser.get("https://in.bookmyshow.com/national-capital-region-ncr")
 # Wait 20 seconds for page to load
-timeout = 20
+timeout = 60
 try:
     WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='navbar']/div[2]/div/div[2]/div")))
     print("Homepage Loaded")
@@ -95,7 +96,22 @@ except TimeoutException:
     print("Timed out waiting for page to load")
     browser.quit()
 
-# TODO: Choose the date (today/tomorrow)
+dateEle = browser.find_element_by_xpath('//div[@class="date-numeric"]')
+curSelectedDate = dateEle.text
+if(DATE == curSelectedDate):
+    pass
+else:
+    dateEle = browser.find_element_by_xpath("//*[@id='showDates']//li/a/div[contains(text(),'%s')]"%(DATE))
+    dateEle.click()
+    try:
+        WebDriverWait(browser, timeout).until(EC.visibility_of_element_located((By.XPATH, "//*[@id='showEvents']/ul")))
+        theatreName = browser.find_element_by_xpath('//h1').text
+        print(theatreName,"Date Changed!")
+
+    except TimeoutException:
+        print("Timed out waiting for page to load")
+        browser.quit()
+
 # TODO: Handle the options of 2D and 3D movies with same name
 
 showTime = browser.find_element_by_xpath("//*[@id='showEvents']//a[contains(text(),'%s')]//ancestor::li[@class='list']/div[2]//div[contains(text(),'%s')]/ancestor::a"%(MOVIE,SHOWTIME))
@@ -162,3 +178,5 @@ restart_program()
 
 
 # IP 122.161.222.151
+# //div[@class="date-numeric"]
+#//*[@id="showDates"]
